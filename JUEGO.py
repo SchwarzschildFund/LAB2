@@ -9,7 +9,7 @@ pygame.init()
 
 # Creación de la ventana del juego en la pantalla:
 pygame.display.set_caption("ReciclaMONDA!")
-ventana = pygame.display.set_mode((1280, 720))
+ventana = pygame.display.set_mode((1280, 720))jhvhjvjhvj
 
 # Establecemos el color de la ventana:
 COLOR_CALLE = (128, 128, 128)
