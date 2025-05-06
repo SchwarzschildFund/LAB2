@@ -1,4 +1,5 @@
 import pygame
+from camera import camera
 
 class TileKind:
     def __init__(self, name, image, is_solid):
@@ -32,7 +33,7 @@ class Map:
     def draw(self, ventana):
         for y, row in enumerate(self.tiles):
             for x, tile in enumerate(row):
-                location = (x * self.tile_size, y * self.tile_size)
+                location = (x * self.tile_size - camera.x, y * self.tile_size - camera.y)
                 
                 # Cargamos la imagen que va en esa determinada textura:
                 image = self.tiles_kinds[tile].image
