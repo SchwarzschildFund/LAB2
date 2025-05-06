@@ -1,4 +1,5 @@
 import pygame
+from camera import camera
 
 sprites = []
 loaded = {}
@@ -21,4 +22,4 @@ class Sprite:
         sprites.remove(self)
     
     def draw(self, ventana):
-        ventana.blit(self.image, (self.x, self.y))
+        ventana.blit(self.image, (self.x - camera.x, self.y - camera.y))
