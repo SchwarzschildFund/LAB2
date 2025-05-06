@@ -1,6 +1,7 @@
 import pygame
 from sprite import Sprite
 from teclado import is_key_pressed
+from camera import camera
 
 class Player(Sprite):
     def __init__(self, image, x, y):
@@ -20,3 +21,7 @@ class Player(Sprite):
         
         if is_key_pressed(pygame.K_RIGHT):
             self.x += self.movement_speed
+        
+        # Establecemos la posición de la cámara en la posición del jugador:
+        camera.x = self.x - 1280/2
+        camera.y = self.y - 720/2
