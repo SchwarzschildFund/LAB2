@@ -1,15 +1,15 @@
 import pygame
 import teclado
 from player import Player
-from sprite import sprites
+from sprite import sprites, Sprite
 from map import TileKind, Map
+from camera import crear_ventana
 
 # Inicializar pygame
 pygame.init()
 
 # Creación de la ventana del juego en la pantalla:
-pygame.display.set_caption("ReciclaMONDA!")
-ventana = pygame.display.set_mode((1280, 720))
+ventana = crear_ventana(1280, 720, "ReciclaMONDA!")
 
 # Establecemos el color de la ventana:
 COLOR_CALLE = (128, 128, 128)
@@ -20,15 +20,21 @@ player = Player("images/personaje1.png", 0, 0)
 
 # Establecemos los tipos de texturas que va a tener el mapa:
 tile_kinds = [
-    TileKind("agua", "images/agua.png", False),
+    TileKind("agua", "images/agua.png", True),
     TileKind("anden", "images/anden.png", False),
     TileKind("carretera", "images/carretera.png", False),
-    TileKind("edificio", "images/edificio.png", True),
-    TileKind("pasto", "images/pasto.png", False)
+    TileKind("lineacarretera", "images/lineascarretera.png", False),
+    TileKind("lineacarretera2", "images/lineascarretera2.png", False),
+    TileKind("pasto", "images/pasto.png", False),
+    TileKind("senderopeatonal", "images/senderopeatonal.png", False),
+    TileKind("senderopeatonal2", "images/senderopeatonal2.png", False),
+    TileKind("arena", "images/arena.png", False),
+    TileKind("senderoparque", "images/senderoparque.png", False)
 ]
 
 # Procedemos a crear el mapa:
 map = Map("maps/start.map", tile_kinds, 32)
+
 
 # Bucle que controla la ejecución del juego:
 while jugando:
