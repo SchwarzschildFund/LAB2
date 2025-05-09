@@ -56,7 +56,7 @@ while jugando:
         
         elif event.type == pygame.KEYUP:
             teclado.keys_down.remove(event.key)
-    
+        display_image = player.update(pygame.transform.flip(pygame.image.load("images/personaje1.png"), True, False))
     for a in active_objs:
         a.update()
 
