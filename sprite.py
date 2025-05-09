@@ -1,20 +1,18 @@
 import pygame
+from pygame import Rect
 from camera import camera
 
 sprites = []
 loaded = {}
 
 class Sprite:
-    def __init__(self, image, x, y):
+    def __init__(self, image):
         if image in loaded:
             self.image = loaded[image]
         
         else:
-            self.image = pygame.image.load(image)
+            self.image = pygame.image.load(image).convert_alpha()
             loaded[image] = self.image
-        
-        self.x = x
-        self.y = y
 
         sprites.append(self)
 
@@ -22,4 +20,4 @@ class Sprite:
         sprites.remove(self)
     
     def draw(self, ventana):
-        ventana.blit(self.image, (self.x - camera.x, self.y - camera.y))
+        ventana.blit(self.image, (self.entity.x - camera.x, self.entity.y - camera.y))
