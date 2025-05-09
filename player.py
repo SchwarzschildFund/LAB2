@@ -6,7 +6,7 @@ from entity import Entity, active_objs
 from physics import Body
 
 movement_speed = 6
-
+flipped = False
 class Player:
     def __init__(self):
         active_objs.append(self)
@@ -29,10 +29,10 @@ class Player:
         # Movimientos izquierda y derecha:
         if is_key_pressed(pygame.K_LEFT):
             self.entity.x -= movement_speed
-        
+            flipped = True
         if is_key_pressed(pygame.K_RIGHT):
             self.entity.x += movement_speed
-        
+            flipped = False
         if not body.is_position_valid():
             self.entity.x = previous_x
         
