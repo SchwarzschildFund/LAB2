@@ -4,6 +4,8 @@ from player import Player
 from sprite import sprites, Sprite
 from map import TileKind, Map
 from camera import crear_ventana
+from entity import Entity, active_objs
+from physics import Body
 
 # Inicializar pygame
 pygame.init()
@@ -14,9 +16,6 @@ ventana = crear_ventana(1280, 720, "ReciclaMONDA!")
 # Establecemos el color de la ventana:
 COLOR_CALLE = (128, 128, 128)
 jugando = True
-
-# Creamos el jugador:
-player = Player("images/personaje1.png", 0, 0)
 
 # Establecemos los tipos de texturas que va a tener el mapa:
 tile_kinds = [
@@ -32,9 +31,18 @@ tile_kinds = [
     TileKind("senderoparque", "images/senderoparque.png", False)
 ]
 
+# Creamos el jugador:
+player = Entity(Player(), Sprite("images/personaje1.png"), Body(8, 48, 16, 16), x=32*11, y=32*20)
+
 # Procedemos a crear el mapa:
 map = Map("maps/start.map", tile_kinds, 32)
 
+# Creamos las estructuras con las que se va a llenar el mapa:
+def add_structures(sprite, body, x, y):
+    Entity(sprite, body, x=x, y=y)
+
+add_structures(Sprite("images/edificio.png"), Body(0, 0, 289, 231), 0*32, 0*32)
+add_structures(Sprite("images/edificio.png"), Body(0, 0, 289, 231), 20*32, 12*32)
 
 # Bucle que controla la ejecución del juego:
 while jugando:
@@ -49,7 +57,8 @@ while jugando:
         elif event.type == pygame.KEYUP:
             teclado.keys_down.remove(event.key)
     
-    player.update()
+    for a in active_objs:
+        a.update()
 
     # Dibujamos en la ventana el código:
     ventana.fill(COLOR_CALLE)
