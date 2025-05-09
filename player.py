@@ -2,26 +2,40 @@ import pygame
 from sprite import Sprite
 from teclado import is_key_pressed
 from camera import camera
+from entity import Entity, active_objs
+from physics import Body
 
-class Player(Sprite):
-    def __init__(self, image, x, y):
-        super().__init__(image, x, y)
+movement_speed = 6
 
-        self.movement_speed = 4
+class Player:
+    def __init__(self):
+        active_objs.append(self)
     
     def update(self):
+        previous_x = self.entity.x
+        previous_y = self.entity.y
+        body = self.entity.get(Body)
+
+        # Movimientos arriba y abajo:
         if is_key_pressed(pygame.K_UP):
-            self.y -= self.movement_speed
+            self.entity.y -= movement_speed
         
         if is_key_pressed(pygame.K_DOWN):
-            self.y += self.movement_speed
+            self.entity.y += movement_speed
+
+        if not body.is_position_valid():
+            self.entity.y = previous_y
         
+        # Movimientos izquierda y derecha:
         if is_key_pressed(pygame.K_LEFT):
-            self.x -= self.movement_speed
+            self.entity.x -= movement_speed
         
         if is_key_pressed(pygame.K_RIGHT):
-            self.x += self.movement_speed
+            self.entity.x += movement_speed
+        
+        if not body.is_position_valid():
+            self.entity.x = previous_x
         
         # Establecemos la posición de la cámara en la posición del jugador:
-        camera.x = self.x - 1280/2
-        camera.y = self.y - 720/2
+        camera.x = self.entity.x - 1280/2
+        camera.y = self.entity.y - 720/2
