@@ -1,5 +1,4 @@
 from pygame import Rect
-from sprite import Sprite
 
 bodies = []
 
@@ -7,6 +6,27 @@ class Body:
     def __init__(self, x=0, y=0, width=32, height=32):
         self.hitbox = Rect(x, y, width, height)
         bodies.append(self)
+
+
+    def is_position_valid(self):
+            from map import map
+            x = self.entity.x + self.hitbox.x
+            y = self.entity.y + self.hitbox.y
+
+            if x > map.width or x < 0:
+                return False
+            
+            if y > map.height or y < 0:
+                return False
+            
+            if map.is_rect_solid(x, y, self.hitbox.width, self.hitbox.height):
+                return False  
+    
+            for body in bodies:
+                if body != self and body.is_colliding_with(self):
+                    return False
+            return True
+
 
     def is_colliding_with(self, other):
         x = self.entity.x + self.hitbox.x
@@ -19,9 +39,3 @@ class Body:
             return True
         else:
             return False
-    
-    def is_position_valid(self):
-        for body in bodies:
-            if body != self and body.is_colliding_with(self):
-                return False
-        return True
