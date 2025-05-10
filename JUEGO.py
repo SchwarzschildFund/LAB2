@@ -1,7 +1,7 @@
 import pygame
 import teclado
 from player import Player
-from sprite import sprites, Sprite
+from sprite import Sprite, sprites_structures
 from map import TileKind, Map
 from camera import crear_ventana
 from entity import Entity, active_objs
@@ -31,18 +31,15 @@ tile_kinds = [
     TileKind("senderoparque", "images/senderoparque.png", False)
 ]
 
-# Creamos el jugador:
-player = Entity(Player(), Sprite("images/personaje1.png"), Body(8, 48, 16, 16), x=32*11, y=32*20)
-
 # Procedemos a crear el mapa:
 map = Map("maps/start.map", tile_kinds, 32)
 
-# Creamos las estructuras con las que se va a llenar el mapa:
-def add_structures(sprite, body, x, y):
-    Entity(sprite, body, x=x, y=y)
+# Agregamos los sprites del personaj
+player_sprite = Sprite("images/Personaje/personaje1.png", False)
+player_sprite.add()
 
-add_structures(Sprite("images/edificio.png"), Body(0, 0, 289, 231), 0*32, 0*32)
-add_structures(Sprite("images/edificio.png"), Body(0, 0, 289, 231), 20*32, 12*32)
+#Creamos el sprite para el jugador
+player = Entity(Player(player_sprite), player_sprite, Body(8, 24, 16, 5), x=32*32, y=32*32)
 
 # Bucle que controla la ejecución del juego:
 while jugando:
@@ -56,7 +53,7 @@ while jugando:
         
         elif event.type == pygame.KEYUP:
             teclado.keys_down.remove(event.key)
-        display_image = player.update(pygame.transform.flip(pygame.image.load("images/personaje1.png"), True, False))
+    
     for a in active_objs:
         a.update()
 
@@ -65,7 +62,7 @@ while jugando:
 
     map.draw(ventana)
 
-    for s in sprites:
+    for s in [player_sprite]:
         s.draw(ventana)
 
     pygame.display.flip()
