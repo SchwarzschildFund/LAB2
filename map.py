@@ -3,6 +3,7 @@ from camera import camera
 from math import ceil
 
 map = None
+pasto_tiles = []
 
 class TileKind:
     def __init__(self, name, image, is_solid):
@@ -79,6 +80,11 @@ class Map:
     def draw(self, ventana):
         for y, row in enumerate(self.tiles):
             for x, tile in enumerate(row):
+                if tile == 5:
+                    x_pasto = x * self.tile_size
+                    y_pasto = y * self.tile_size
+                    pasto_tiles.append((x_pasto, y_pasto))
+
                 location = (x * self.tile_size - camera.x, y * self.tile_size - camera.y)
                 
                 # Cargamos la imagen que va en esa determinada textura:
