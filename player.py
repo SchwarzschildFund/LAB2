@@ -1,7 +1,7 @@
 import pygame
 from sprite import Sprite
 from teclado import is_key_pressed
-from camera import camera
+from camera import camera, crear_ventana
 from entity import Entity, active_objs
 from physics import Body
 
@@ -10,7 +10,18 @@ movement_speed = 6
 class Player:
     def __init__(self, sprite):
         active_objs.append(self)
+
         self.sprite = sprite
+
+        self.held_trash = None
+        self.delivered_trash = {
+            "Inorganica": 0,
+            "Organica": 0,
+            "Reciclable": 0
+        } 
+
+        self.inventario = self.held_trash
+        self.entregado = self.delivered_trash
 
         # Cargar sprites según dirección
         self.images_DOWN = [
@@ -114,3 +125,10 @@ class Player:
             camera.y = 0
         elif camera.y > map.height - 720:
             camera.y = map.height - 720
+
+
+    def draw_player(self, ventana):
+        if not hasattr(self, 'entity'):
+            raise ValueError("Este sprite no está asociado a una entidad.")
+
+        ventana.blit(self.sprite.image, (self.entity.x - camera.x, self.entity.y - camera.y))
