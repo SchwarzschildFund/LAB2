@@ -10,9 +10,11 @@ class Entity:
         self.x = x
         self.y = y
     
+
     def add(self, component):
         self.components.append(component)
         component.entity = self
+
 
     def remove(self, kind):
         c = self.get(kind)
@@ -20,11 +22,13 @@ class Entity:
             c.entity = None
             self.components.remove(c)
 
+
     def has(self, kind):
         for c in self.components:
             if isinstance(c, kind):
                 return True
         return False
+    
     
     def get(self, kind):
         for c in self.components:
