@@ -16,9 +16,10 @@ class Sprite:
         self.is_structure = is_structure
 
 
-    def add(self):
+    def add_sprite(self, y):
         if self.is_structure == True:
-            sprites_structures.append(self)
+            sprite = self, y
+            sprites_structures.append(sprite)
 
 
     def delete(self):
@@ -27,7 +28,12 @@ class Sprite:
 
     
     def draw(self, ventana):
-        if self.entity is None:
-            return
+        if not hasattr(self, 'entity'):
+            raise ValueError("Este sprite no está asociado a una entidad.")
 
-        ventana.blit(self.image, (self.entity.x - camera.x, self.entity.y - camera.y))
+        self_sprite = self.entity.get(Sprite)
+        
+        if self_sprite.image.get_height() <= 32:
+            ventana.blit(self_sprite.image, (self.entity.x - camera.x, self.entity.y - camera.y))
+        else:
+            ventana.blit(self_sprite.image, (self.entity.x - camera.x, self.entity.y - self_sprite.image.get_height() - camera.y))
