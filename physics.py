@@ -31,6 +31,7 @@ class Body:
     def is_colliding_with(self, other):
         x = self.entity.x + self.hitbox.x
         y = self.entity.y + self.hitbox.y
+        print("Posición clase PHYSICS: ", self.entity.y)
         
         other_x = other.entity.x + other.hitbox.x
         other_y = other.entity.y + other.hitbox.y
