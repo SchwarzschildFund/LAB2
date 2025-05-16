@@ -1,99 +1,158 @@
 import pygame
-from camera import camera
-from math import ceil
+import teclado
+from basuras import Basura, Trashbin, crear_basuras
+from player import Player
+from sprite import Sprite, sprites_structures
+from map import TileKind, Map, pasto_tiles
+from camera import crear_ventana
+from entity import Entity, active_objs
+from physics import Body
 
-map = None
-pasto_tiles = []
 
-class TileKind:
-    def __init__(self, name, image, is_solid):
-        self.name = name
-        self.image = pygame.image.load(image)
-        self.is_solid = is_solid
+# Inicializar pygame
+pygame.init()
+pygame.font.init()
+fuente = pygame.font.SysFont("Arial", 24)
 
-class Map:
-    def __init__(self, archivo_mapa, tile_kinds, tile_size):
-        global map
-        map = self
-        self.tiles_kinds = tile_kinds
+# Creación de la ventana del juego en la pantalla:
+ventana = crear_ventana(1280, 720, "ReciclaMONDA!")
 
-        # Cargamos el archivo del mapa:
-        archivo = open(archivo_mapa, "r")
-        data = archivo.read()
-        archivo.close()
+# Establecemos el color de la ventana:
+COLOR_VERDE = (110, 160, 50)
+jugando = True
 
-        # Establecemos las diferentes texturas del mapa cargado:
-        self.tiles = []
+# Establecemos los tipos de texturas que va a tener el mapa:
+tile_kinds = [
+    TileKind("agua", "images/mapa/agua.png", True),
+    TileKind("anden", "images/mapa/anden.png", False),
+    TileKind("carretera", "images/mapa/carretera.png", False),
+    TileKind("lineacarretera", "images/mapa/lineascarretera.png", False),
+    TileKind("lineacarretera2", "images/mapa/lineascarretera2.png", False),
+    TileKind("pasto", "images/mapa/pasto.png", False),
+    TileKind("senderopeatonal", "images/mapa/senderopeatonal.png", False),
+    TileKind("senderopeatonal2", "images/mapa/senderopeatonal2.png", False),
+    TileKind("arena", "images/mapa/arena.png", False),
+    TileKind("senderoparque", "images/mapa/senderoparque.png", False),
+    TileKind("pasto2", "images/mapa/pasto2.png", False)
+]
 
-        for line in data.split("\n"):
-            row = []
-            
-            for tile_number in line.split(","):
-                row.append(int(tile_number))
+
+# Procedemos a crear el mapa:
+map = Map("maps/start.map", tile_kinds, 32)
+map.selection_tiles()
+
+# Agregamos los sprites del personaje:
+player_sprite = Sprite("images/Personaje/personaje1.png", False)
+
+#Creamos el sprite para el jugador
+player = Entity(Player(player_sprite), player_sprite, Body(8, 24, 16, 5), x=32*7, y=32*6 + player_sprite.image.get_height())
+
+
+# Agregamos los sprites de los árboles:
+for pos in pasto_tiles:
+    structure_sprite = Sprite("images/Structures/tree.png", True)
+    structure = Entity(structure_sprite, Body(8, -35, 24, 35), x=pos[0], y=pos[1] + 15)
+    y = structure.y + structure_sprite.image.get_height()
+    structure_sprite.add_sprite(y)
+
+# Agregamos los sprites de las canecas:
+bin_sprite_org = Sprite("images/Structures/Organico.png", True)
+bin_organica = Entity(bin_sprite_org, Body(6, 22, 20, 10), x=32*19, y=32*3)
+bin_sprite_org.add_sprite(bin_organica.y)
+
+bin_sprite_inorg = Sprite("images/Structures/Inorganico.png", True)
+bin_inorganica = Entity(bin_sprite_inorg, Body(6, 22, 18, 9),x=32*38, y=32*32)
+bin_sprite_inorg.add_sprite(bin_inorganica.y)
+
+bin_sprite_reciclable = Sprite("images/Structures/Reciclable.png", True)
+bin_reciclable = Entity(bin_sprite_reciclable, Body(4, 22, 20, 10),x=32*57, y=32*20)
+bin_sprite_reciclable.add_sprite(bin_reciclable.y)
+
+edificio_sprite = Sprite("images/Structures/edificio.png", True)
+edificio = Entity(edificio_sprite, Body(0, 52, 32, 20), x=32*48, y=32*2)
+edificio_sprite.add_sprite(edificio.y)
+
+for s in sprites_structures:
+    sprites_structures.sort(key=lambda s: s[1])
+
+
+""""
+# Creamos el sprite para la basura y basureros
+trash_sprite_org = ("", False)
+trash_sprite_inorg = ("", False)
+trash_sprite_reciclable = ("", False)
+
+#Creamos las entidades de las basuras:
+
+Entity(Basura(trash_sprite_org,"Organica"), trash_sprite_org, Body(),x=??, y=??)
+Entity(Basura(trash_sprite_inorg,"Inorganica"),trash_sprite_inorg,body(),x=??, y=??)
+Entity(Basura(trash_sprite_reciclable,"Reciclable"),trash_sprite_reciclable,body(),x=??, y=??)
+
+basuras = crear_basuras(0,map.width - 32, map.height - 32 , cantidad=15)
+"""
+
+# Bucle que controla la ejecución del juego:
+while jugando:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            jugando = False
         
-            self.tiles.append(row)
+        # Condicionales para checkear si una tecla es oprimida:
+        elif event.type == pygame.KEYDOWN:
+            teclado.keys_down.add(event.key)
         
-        # Determinamos el tamaño de cada baldosa:
-        self.tile_size = tile_size
-
-        #Calculamos los límites del mapa:
-        self.width = len(self.tiles[0]) * tile_size
-        self.height = len(self.tiles) * tile_size
+        elif event.type == pygame.KEYUP:
+            teclado.keys_down.remove(event.key)
     
-    def is_point_solid(self, x, y):
-        x_tile = int(x / self.tile_size)
-        y_tile = int(y / self.tile_size)
-
-        # Verificamos que la baldosa esté adentro del mapa:
-        if x_tile < 0 or y_tile < 0 or y_tile >= len(self.tiles) or x_tile >= len(self.tiles[0]):
-            return False
-        
-        # Buscamos la baldosa en la matriz de baldosas que conforma el mapa y verificamos si es sólida o no:
-        tile = self.tiles[y_tile][x_tile]
-        return self.tiles_kinds[tile].is_solid
+    for a in active_objs:
+        a.update()
     
-    
-    def is_rect_solid(self, x, y, width, height):
-        # Verificamos el tamaño del rectángulo y lo dividimos por el tamaño de cada pixel:
-        x_checks = int(ceil(width / self.tile_size))
-        y_checks = int(ceil(height / self.tile_size))
 
-        for dim_y in range(y_checks):
-            for dim_x in range(x_checks):
-                check_x = x + dim_x * self.tile_size
-                check_y = y + dim_y * self.tile_size
+    # Dibujamos en la ventana el código:
+    ventana.fill(COLOR_VERDE)
 
-                # Usamos la función para verificar si la baldosa es sólida:
-                if self.is_point_solid(check_x, check_y):
-                    return True
-            
-        # Ahora verificamos las baldosas de las esquinas:
-        if self.is_point_solid(x + width, y):
-            return True
-        if self.is_point_solid(x, y + height):
-            return True
-        if self.is_point_solid(x + width, y + height):
-            return True
-        return False
+    map.draw(ventana)
+
+    player_component = player.get(Player)
+
+    dibujables = []
+
+    # Añadir estructuras
+    for s in sprites_structures:
+        sprite = s[0]
+        y = s[1]
+        y_draw = y + sprite.image.get_height()
+
+        dibujables.append(("structure", sprite, y_draw))
 
 
-    def selection_tiles(self):
-        for y, row in enumerate(self.tiles):
-            for x, tile in enumerate(row):
-                if tile == 10:
-                    x_pasto = x * self.tile_size
-                    y_pasto = y * self.tile_size
-                    pasto_tiles.append((x_pasto, y_pasto))
-        
-        return pasto_tiles
+    # Añadir jugador solo una vez (ya tiene el sprite correcto)
+    player_y_draw = player.y + player_sprite.image.get_height()
+    dibujables.append(("player", player_component, player_y_draw))
 
+    # Ordenar por eje Y
+    dibujables.sort(key=lambda x: x[2])
 
-    def draw(self, ventana):
-        for y, row in enumerate(self.tiles):
-            for x, tile in enumerate(row):
+    # Dibujar todo en orden
+    for tipo, obj, _ in dibujables:
+        if tipo == "structure":
+            obj.draw(ventana)
+        elif tipo == "player":
+            obj.draw_player(ventana)
 
-                location = (x * self.tile_size - camera.x, y * self.tile_size - camera.y)
-                
-                # Cargamos la imagen que va en esa determinada textura:
-                image = self.tiles_kinds[tile].image
-                ventana.blit(image, location)
+ 
+    if player_component:
+        texto_inventario = f"INVENTARIO: {player_component.inventario if player_component.inventario else "Nada"}"
+        texto_entregado = f"BASURA RECOGIDA: {player_component.entregado}"
+
+        texto1 = fuente.render(texto_inventario, True, (0, 0, 0))
+        texto2 = fuente.render(texto_entregado, True, (0, 0, 0))
+        ventana.blit(texto1, (10, 10))
+        ventana.blit(texto2, (10, 40))
+  
+
+    pygame.display.flip()
+
+    pygame.time.delay(17)
+
+pygame.quit()
