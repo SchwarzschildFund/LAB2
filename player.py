@@ -62,6 +62,7 @@ class Player:
         # Movimiento vertical
         if is_key_pressed(pygame.K_UP):
             self.entity.y -= movement_speed
+            print("Posición clase PLAYER: ", self.entity.y)
 
             self.animation_timer += 1
             if self.animation_timer >= self.animation_speed:
