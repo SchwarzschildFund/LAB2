@@ -28,7 +28,7 @@ class Map:
         for line in data.split("\n"):
             row = []
             
-            for tile_number in line:
+            for tile_number in line.split(","):
                 row.append(int(tile_number))
         
             self.tiles.append(row)
@@ -77,13 +77,20 @@ class Map:
         return False
 
 
-    def draw(self, ventana):
+    def selection_tiles(self):
         for y, row in enumerate(self.tiles):
             for x, tile in enumerate(row):
-                if tile == 5:
+                if tile == 10:
                     x_pasto = x * self.tile_size
                     y_pasto = y * self.tile_size
                     pasto_tiles.append((x_pasto, y_pasto))
+        
+        return pasto_tiles
+
+
+    def draw(self, ventana):
+        for y, row in enumerate(self.tiles):
+            for x, tile in enumerate(row):
 
                 location = (x * self.tile_size - camera.x, y * self.tile_size - camera.y)
                 
